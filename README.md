@@ -1,4 +1,4 @@
-# LG AiMers 8기 — EXAONE 4.0 1.2B 경량화
+# 26-LG-Aimers(EXAONE 4.0 1.2B 경량화)
 
 주최: LG AI Research × DACON
 
