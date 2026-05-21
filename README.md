@@ -1,6 +1,6 @@
 # 26-1-LG-Aimers
 
-## 대회 개요
+### 대회 개요
 
 주제: EXAONE 4.0 1.2B 경량화
 
@@ -10,7 +10,7 @@
 
 
 
-## 실험 기록
+### 실험 기록
 
 ### 1) 첫 개선 (0.50 → 0.59)
 
@@ -78,7 +78,7 @@ MLP 양자화 결과:
 
 
 
-## 최종 전략
+### 최종 전략
 
 ```python
 GPTQModifier(
@@ -95,14 +95,14 @@ GPTQModifier(
 구현: v3_best_061.py
 
 
-## 대회 결과
+### 대회 결과
 
 | Score | Rank |
 |------:|-----:|
 | 0.6184 | 97/628 (상위 16%) |
 
 
-## 참고
+### 참고
 
 - LG AI Research. (2024). EXAONE 4.0. arXiv:2412.06450
 - [LGAI-EXAONE/MANTA-1M](https://huggingface.co/datasets/LGAI-EXAONE/MANTA-1M)
