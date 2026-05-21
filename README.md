@@ -8,6 +8,9 @@
 
 • 주최: LG AI Research × DACON
 
+&nbsp;
+&nbsp;
+&nbsp;
 
 ## 실험 기록
 
