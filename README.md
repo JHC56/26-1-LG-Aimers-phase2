@@ -2,14 +2,13 @@
 
 ### 대회 개요
 
-주제: EXAONE 4.0 1.2B 경량화
+• 주제: EXAONE 4.0 1.2B 경량화
 
-기간: 2026.01.02 ~ 2026.02.26 (약 8주)
+• 기간: 2026.01.02 ~ 2026.02.26 (약 8주)
 
-주최: LG AI Research × DACON
+• 주최: LG AI Research × DACON
 
-
-
+---
 ### 실험 기록
 
 ### 1) 첫 개선 (0.50 → 0.59)
@@ -95,14 +94,26 @@ GPTQModifier(
 구현: v3_best_061.py
 
 
+
 ### 대회 결과
 
 | Score | Rank |
 |------:|-----:|
 | 0.6184 | 97/628 (상위 16%) |
 
+###부록
+| 실험 | 코드 | Score |
+|------|------|------:|
+| DACON 베이스라인 | [dacon_baseline.py](baseline/dacon_baseline.py) | ~0.50 |
+| 첫 GPTQ 적용 (256 samples) | [v1_baseline_059.py](experiments/v1_baseline_059.py) | 0.5906 |
+| dampening_frac 실험 | [v2_dampening_test.py](experiments/v2_dampening_test.py) | 0.4698 |
+| MLP 보호 최적화 | [v3_best_061.py](experiments/v3_best_061.py) | 0.6136 |
+| actorder 실험 | [actorder_variant.py](experiments/actorder_variant.py) | 미지원 |
+| 제출용 압축 | [compress.py](utils/compress.py) | - |
+| 실험 기록 | [experiment_log.py](docs/experiment_log.py) | - |
 
 ### 참고
 
 - LG AI Research. (2024). EXAONE 4.0. arXiv:2412.06450
 - [LGAI-EXAONE/MANTA-1M](https://huggingface.co/datasets/LGAI-EXAONE/MANTA-1M)
+# 26-1-LG-Aimers
