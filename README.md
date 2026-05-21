@@ -113,7 +113,7 @@ GPTQModifier(
 # 512 samples, 512 seq_length, seed=42
 # dataset: LGAI-EXAONE/MANTA-1M
 ```
-
+구현: v3_best_061.py
 &nbsp;
 &nbsp;
 &nbsp;
