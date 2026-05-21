@@ -1,6 +1,5 @@
 # 26-1-LG-Aimers
 
-&nbsp;
 ### 대회 개요
 
 • 주제: EXAONE 4.0 1.2B 경량화
