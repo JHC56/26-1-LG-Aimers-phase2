@@ -107,4 +107,3 @@ GPTQModifier(
 
 - LG AI Research. (2024). EXAONE 4.0. arXiv:2412.06450
 - [LGAI-EXAONE/MANTA-1M](https://huggingface.co/datasets/LGAI-EXAONE/MANTA-1M)
-- [llmcompressor]([https://github.com/vllm-project/llmcompressor](https://github.com/vllm-project/llm-compressor))
