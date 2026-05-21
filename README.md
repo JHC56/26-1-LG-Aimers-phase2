@@ -4,8 +4,6 @@ LG AI Research × DACON. 2025.
 기간:기간: 2026.01.02 ~ 2026.02.26 (약 8주)
 주최: LG AI Research × DACON
 
-최종 Public Score: **0.6184** (상위 16%)
----
 
 ## 실험 기록
 
