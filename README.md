@@ -130,7 +130,7 @@ GPTQModifier(
 
 ### 대회 결과
 
-| Score | Rank |
+| public Score | Rank |
 |------:|-----:|
 | 0.6184 | 97/628 (상위 16%) |
 
