@@ -59,19 +59,6 @@ GPTQModifier(
 | | Score |
 |---|------:|
 | Public (Best) | **0.6184** |
-| Public (Same Code) | 0.6136 |
-
-동일 코드를 제출해도 서버 상태에 따라 0.005~0.012점 차이가 발생했다 (DACON Q&A 공식 확인).
-
----
-
-## 실패에서 배운 것
-
-- 1.2B 모델은 설정값 하나에 0.1점이 왔다갔다 한다
-- 속도가 지능보다 점수에 더 크게 반영됐다
-- 파인튜닝(LoRA, 증류)은 소형 모델에서 역효과 — 10스텝만 해도 지식이 깨진다
-- dampening_frac 0.01 vs 0.1 차이만으로 0.15점 차이
-- 결국 이 설정에서 0.62를 넘기는 건 운의 영역이었다
 
 ---
 
@@ -83,12 +70,9 @@ llmcompressor, datasets==4.4.1, accelerate==1.10.1
 Google Colab T4 GPU
 ```
 
-base_model은 대회 제공 모델이라 포함하지 않았다. HuggingFace에서 `LGAI-EXAONE/EXAONE-4.0-1.2B`를 받으면 된다.
-
 ---
 
 ## 참고
 
 - LG AI Research. (2024). EXAONE 4.0. arXiv:2412.06450
 - [LGAI-EXAONE/MANTA-1M](https://huggingface.co/datasets/LGAI-EXAONE/MANTA-1M)
-- [llmcompressor](https://github.com/vllm-project/llmcompressor)
