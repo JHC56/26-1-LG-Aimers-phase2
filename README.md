@@ -13,6 +13,11 @@
 &nbsp;
 &nbsp;
 &nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
 
 ## 실험 기록
 
@@ -102,7 +107,11 @@ GPTQModifier(
 
 구현: v3_best_061.py
 
-
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
 &nbsp;
 &nbsp;
 &nbsp;
@@ -115,7 +124,11 @@ GPTQModifier(
 |------:|-----:|
 | 0.6184 | 97/628 (상위 16%) |
 
-
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
 &nbsp;
 &nbsp;
 &nbsp;
@@ -134,7 +147,11 @@ GPTQModifier(
 | 제출용 압축 | [compress.py](utils/compress.py) | - |
 | 실험 기록 | [experiment_log.py](docs/experiment_log.py) | - |
 
-
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
 &nbsp;
 &nbsp;
 &nbsp;
