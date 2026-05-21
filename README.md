@@ -1,74 +1,42 @@
-# EXAONE 4.0 1.2B 경량화 (GPTQ)
+# LG AIMers 8기 — EXAONE 4.0 1.2B 경량화
 
-LG AIMers 8기 Phase 2 온라인 해커톤 (DACON) 참가 기록.  
-EXAONE 4.0 1.2B 모델을 W4A16 GPTQ로 경량화했고, 최종 Public Score **0.6184**를 기록했다.
+## 대회 개요
 
-팀: CJH4567(최주혁), gmk(강민기)
-
----
-
-## 구조
-
-```
-experiments/
-  v1_baseline_059.py      첫 시도 (0.59)
-  v2_dampening_test.py    dampening_frac 실험 (0.47)
-  v3_best_061.py          최종 제출 코드 (0.6184)
-  actorder_variant.py     actorder 실험 (실패)
-docs/
-  experiment_log.py       전체 실험 기록 (실행 가능)
-baseline/
-  dacon_baseline.py       DACON 제공 베이스라인 (~0.50)
-utils/
-  compress.py             제출용 zip 생성
-```
+| | |
+|---|---|
+| 주제 | EXAONE 4.0 1.2B 모델 경량화 (GPTQ Quantization) |
+| 기간 | 2026.01.02 ~ 2026.02.26 |
+| 주최 | LG AI Research × DACON |
 
 ---
 
-## 왜 MLP를 보호해야 하는가
+## 실험 기록
 
-EXAONE 1.2B의 파라미터 분포를 보면 MLP가 70.6%, Attention이 29.4%다.  
-MLP를 양자화하면 성능이 바로 무너진다. 실제로 MLP 보호 없이 전체 양자화하면 0.47까지 떨어졌다.
+| 실험 | 코드 | Score | 시간 |
+|------|------|------:|-----:|
+| DACON 베이스라인 | [dacon_baseline.py](baseline/dacon_baseline.py) | ~0.50 | - |
+| 첫 GPTQ 적용 (256 samples) | [v1_baseline_059.py](experiments/v1_baseline_059.py) | 0.5900 | 10m 14s |
+| dampening_frac 실험 | [v2_dampening_test.py](experiments/v2_dampening_test.py) | 0.4699 | 13m 59s |
+| MLP 보호 + 샘플 512 | - | 0.5991 | 10m 44s |
+| MLP 보호 최적화 | [v3_best_061.py](experiments/v3_best_061.py) | 0.6136 | 10m 7s |
+| actorder 실험 | [actorder_variant.py](experiments/actorder_variant.py) | 미지원 | - |
+| group size 64 | - | 0.5806 | 11m 11s |
+| group size 32 | - | 0.5473 | 11m 43s |
+| MLP 보호 없이 전체 양자화 | - | 0.4715 | 13m 15s |
+| MLP 부분 보호 (gate/up/down 개별) | - | 0.5240 | 11m+ |
+| 레이어 20번부터 보호 | - | 0.5500 | - |
+| LoRA 파인튜닝 (10~32 step) | - | 0.30~0.48 | - |
+| 지식 증류 | - | ~0.30 | - |
+| KMMLU 데이터셋 | - | 하락 | - |
 
-MLP를 통째로 보호하고 Attention만 4비트로 양자화하는 게 이 모델에서는 정답이었다.  
-이걸 알아내기까지가 0.59에서 0.61로 가는 전환점이었다.
-
----
-
-## 점수 추이
-
-| 버전 | 설명 | Score | 시간 | 코드 |
-|------|------|------:|-----:|------|
-| baseline | DACON 베이스라인 | ~0.50 | - | `baseline/dacon_baseline.py` |
-| v1 | 첫 GPTQ 적용, 256 samples | 0.5900 | 10m 14s | `experiments/v1_baseline_059.py` |
-| v2 | MLP 보호 시작, 512 samples | 0.5991 | 10m 44s | - |
-| v3 | MLP 보호 + 최적 설정 | 0.6136 | 10m 7s | `experiments/v3_best_061.py` |
-| v4 | v3 재제출 (서버 상태 차이) | **0.6184** | 10m 2s | 동일 |
-
-v3과 v4는 같은 코드다. 서버 상태에 따라 0.613~0.618 사이에서 변동이 있었다.
-
----
-
-## 실패한 것들
-
-| 실험 | Score | 왜 실패했는가 |
-|------|------:|-------------|
-| dampening_frac 0.1 | 0.4699 | 감쇠값이 너무 커서 양자화 정밀도 붕괴 |
-| group size 64 | 0.5806 | 정밀도는 올라가는데 속도가 더 떨어짐 |
-| group size 32 | 0.5473 | 더 악화. actorder는 라이브러리가 지원 안 함 |
-| MLP 보호 없이 전체 양자화 | 0.4715 | MLP를 건드리면 안 된다는 걸 증명 |
-| MLP 부분 보호 (gate/up/down 개별) | 0.5240 | 개별 보호는 전체 보호의 절반도 안 됨 |
-| 레이어 20번부터 보호 | 0.5500 | 보호 레이어 늘리면 용량 커지고 속도 하락 |
-| LoRA 파인튜닝 | 0.30~0.48 | 10스텝만 해도 기존 지식이 파괴됨 |
-| 지식 증류 | ~0.30 | 같은 이유 |
-| Pruning | 측정 불가 | 1.2B에서 효과 없음 |
-| KMMLU 데이터셋 | 하락 | MANTA-1M이 이 모델에 가장 맞음 |
-| 128 samples + 1024 len | 0.5110 | 샘플 수를 줄이면 안 됨 |
-| 1024 samples | OOM | Colab 무료 메모리 한계 |
+전체 실험 기록은 [experiment_log.py](docs/experiment_log.py)에서 실행해서 볼 수 있다.
 
 ---
 
-## 최적 설정
+## 최종 전략
+
+EXAONE 1.2B는 MLP가 파라미터의 70.6%를 차지한다.  
+MLP를 양자화하면 성능이 바로 무너지고, MLP를 보호한 채 Attention(29.4%)만 4비트 양자화하는 게 최적이었다.
 
 ```python
 GPTQModifier(
@@ -78,38 +46,49 @@ GPTQModifier(
     dampening_frac=0.01,
     block_size=128,
 )
-# calibration: 512 samples, 512 seq_length
+# 512 samples, 512 seq_length, seed=42
 # dataset: LGAI-EXAONE/MANTA-1M
-# seed: 42
 ```
+
+구현 코드: [v3_best_061.py](experiments/v3_best_061.py)
 
 ---
 
-## 배운 것
+## 대회 결과
 
-- 1.2B 모델은 설정값 하나에 0.1점이 왔다갔다 한다. 큰 모델과는 다르다.
-- 이 대회에서는 지능보다 속도가 점수에 더 크게 반영됐다.
-- 파인튜닝(LoRA, 증류)은 소형 모델에서 역효과가 난다. 기존 지식이 너무 쉽게 깨진다.
-- 서버 상태에 따라 같은 코드도 0.005~0.012점 차이가 난다 (DACON Q&A 공식 확인).
-- 결국 0.62 넘기는 건 이 설정에서는 운의 영역이었다.
+| | Score |
+|---|------:|
+| Public (Best) | **0.6184** |
+| Public (Same Code) | 0.6136 |
+
+동일 코드를 제출해도 서버 상태에 따라 0.005~0.012점 차이가 발생했다 (DACON Q&A 공식 확인).
+
+---
+
+## 실패에서 배운 것
+
+- 1.2B 모델은 설정값 하나에 0.1점이 왔다갔다 한다
+- 속도가 지능보다 점수에 더 크게 반영됐다
+- 파인튜닝(LoRA, 증류)은 소형 모델에서 역효과 — 10스텝만 해도 지식이 깨진다
+- dampening_frac 0.01 vs 0.1 차이만으로 0.15점 차이
+- 결국 이 설정에서 0.62를 넘기는 건 운의 영역이었다
 
 ---
 
 ## 환경
 
 ```
-pip install llmcompressor peft datasets==4.4.1 accelerate==1.10.1
-pip install transformers==4.57.3  # 대회 서버 호환 버전. 꼭 고정해야 함.
+transformers==4.57.3 (대회 서버 호환 버전)
+llmcompressor, datasets==4.4.1, accelerate==1.10.1
+Google Colab T4 GPU
 ```
 
-Google Colab T4 GPU에서 작업했다.  
-base_model은 대회 제공 모델이라 이 레포에 포함되어 있지 않다.  
-HuggingFace에서 `LGAI-EXAONE/EXAONE-4.0-1.2B`를 받으면 된다.
+base_model은 대회 제공 모델이라 포함하지 않았다. HuggingFace에서 `LGAI-EXAONE/EXAONE-4.0-1.2B`를 받으면 된다.
 
 ---
 
 ## 참고
 
-- LG AI Research. (2024). EXAONE 4.0: Unified Large Language Models Integrating Non-reasoning and Reasoning Modes. arXiv:2412.06450
+- LG AI Research. (2024). EXAONE 4.0. arXiv:2412.06450
 - [LGAI-EXAONE/MANTA-1M](https://huggingface.co/datasets/LGAI-EXAONE/MANTA-1M)
 - [llmcompressor](https://github.com/vllm-project/llmcompressor)
