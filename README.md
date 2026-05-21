@@ -1,4 +1,4 @@
-# LG AIMers 8기 — EXAONE 4.0 1.2B 경량화
+# LG Aimers 8기 — EXAONE 4.0 1.2B 경량화
 
 ## 대회 개요
 
