@@ -1,4 +1,6 @@
-# 26-LG-Aimers(EXAONE 4.0 1.2B 경량화)
+# 26-1-LG-Aimers
+
+주제: EXAONE 4.0 1.2B 경량화
 
 주최: LG AI Research × DACON
 
@@ -7,7 +9,6 @@
 최종 점수 0.6184 
 
 최종 등수 97/628 (상위 16%)
-
 
 
 
