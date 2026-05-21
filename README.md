@@ -8,7 +8,9 @@
 
 • 주최: LG AI Research × DACON
 
----
+
+
+
 ### 실험 기록
 
 ### 1) 첫 개선 (0.50 → 0.59)
@@ -101,7 +103,8 @@ GPTQModifier(
 |------:|-----:|
 | 0.6184 | 97/628 (상위 16%) |
 
-###부록
+
+### 부록
 | 실험 | 코드 | Score |
 |------|------|------:|
 | DACON 베이스라인 | [dacon_baseline.py](baseline/dacon_baseline.py) | ~0.50 |
@@ -111,6 +114,7 @@ GPTQModifier(
 | actorder 실험 | [actorder_variant.py](experiments/actorder_variant.py) | 미지원 |
 | 제출용 압축 | [compress.py](utils/compress.py) | - |
 | 실험 기록 | [experiment_log.py](docs/experiment_log.py) | - |
+
 
 ### 참고
 
