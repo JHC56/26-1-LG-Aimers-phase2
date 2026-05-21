@@ -1,74 +1,84 @@
-# LG Aimers 8기 — EXAONE 4.0 1.2B 경량화
+# LG AIMers 8기 — EXAONE 4.0 1.2B 경량화
 
-## 대회 개요
+LG AI Research × DACON. 2025.  
+기간:기간: 2026.01.02 ~ 2026.02.26 (약 8주)
+주최: LG AI Research × DACON
 
-| | |
-|---|---|
-| 주제 | EXAONE 4.0 1.2B 모델 경량화 (GPTQ Quantization) |
-| 기간 | 2026.01.02 ~ 2026.02.26 |
-| 주최 | LG AI Research × DACON |
-
+최종 Public Score: **0.6184** (상위 16%)
 ---
 
 ## 실험 기록
 
-| 실험 | 코드 | Score | 시간 |
-|------|------|------:|-----:|
-| DACON 베이스라인 | [dacon_baseline.py](baseline/dacon_baseline.py) | ~0.50 | - |
-| 첫 GPTQ 적용 (256 samples) | [v1_baseline_059.py](experiments/v1_baseline_059.py) | 0.5900 | 10m 14s |
-| dampening_frac 실험 | [v2_dampening_test.py](experiments/v2_dampening_test.py) | 0.4699 | 13m 59s |
-| MLP 보호 + 샘플 512 | - | 0.5991 | 10m 44s |
-| MLP 보호 최적화 | [v3_best_061.py](experiments/v3_best_061.py) | 0.6136 | 10m 7s |
-| actorder 실험 | [actorder_variant.py](experiments/actorder_variant.py) | 미지원 | - |
-| group size 64 | - | 0.5806 | 11m 11s |
-| group size 32 | - | 0.5473 | 11m 43s |
-| MLP 보호 없이 전체 양자화 | - | 0.4715 | 13m 15s |
-| MLP 부분 보호 (gate/up/down 개별) | - | 0.5240 | 11m+ |
-| 레이어 20번부터 보호 | - | 0.5500 | - |
-| LoRA 파인튜닝 (10~32 step) | - | 0.30~0.48 | - |
-| 지식 증류 | - | ~0.30 | - |
-| KMMLU 데이터셋 | - | 하락 | - |
+### 1) 베이스라인 → 첫 개선 (0.50 → 0.59)
 
-전체 실험 기록은 [experiment_log.py](docs/experiment_log.py)에서 실행해서 볼 수 있다.
+DACON 베이스라인은 ~0.50대였다. 
 
----
-
-## 최종 전략
-
-EXAONE 1.2B는 MLP가 파라미터의 70.6%를 차지한다.  
-MLP를 양자화하면 성능이 바로 무너지고, MLP를 보호한 채 Attention(29.4%)만 4비트 양자화하는 게 최적이었다.
-
-```python
-GPTQModifier(
-    scheme="W4A16",
-    targets=["Linear"],
-    ignore=["embed_tokens", "lm_head", "re:model\\.layers\\.\\d+\\.mlp\\..*"],
-    dampening_frac=0.01,
-    block_size=128,
-)
-# 512 samples, 512 seq_length, seed=42
-# dataset: LGAI-EXAONE/MANTA-1M
+```
+2026-02-02  0.5906  첫 GPTQ 적용 (256 samples)
+2026-02-07  0.4904  데이터 수정 시도 (역효과)
+2026-02-07  0.5026  다른 접근
+2026-02-07  0.5991  셔플 + 샘플 512 (처음으로 0.59 돌파)
 ```
 
-구현 코드: [v3_best_061.py](experiments/v3_best_061.py)
+### 2) MLP 보호 발견 (0.59 → 0.61)
+
+EXAONE 구조를 분석하다 MLP가 전체의 70.6%를 차지한다는 걸 알았다. 
+
+따라서 MLP의 세팅을 변경하며 여러번 시도해봤다.
+- MLP만 양자화: 0.45
+- MLP 보호 없이 전체: 0.47
+- MLP 전체 보호: 0.60대
+
+```
+2026-02-10  0.4698  dampening_frac을 0.01 → 0.1 (대실패)
+2026-02-10  0.6136  0.1 다시 0.01로 복구
+2026-02-10  0.5472  group size 변경 시도 (역효과)
+2026-02-11  0.5805  group size 64
+2026-02-11  0.5937  layer selection test
+2026-02-13  0.4714  attention 전체 양자화 (지능 파괴)
+2026-02-13  0.5240  MLP 부분 보호 (게이트/업/다운 개별 보호 실패)
+2026-02-14  0.4762  다운 프로젝션 보호
+```
+
+한 가지만 건드려도 점수가 왔다갔다했다. 하나를 고치려다 다른 게 망가지는 일이 반복됐다.
+
+### 3) 파인튜닝 시도 (전부 실패)
+
+"지능을 더 살릴 수 있을까"라는 생각에 여러 가지를 시도했다.
+
+```
+2026-02-03  0.1497  Pruning(0.5)
+2026-02-04  0.4660  actorder static
+2026-02-05  0.4713  0.59 코드 + LoRA (추가 학습)
+2026-02-16  0.3497  완성 모델에서 데이터 추출 → 증류 + LoRA
+2026-02-16  0.3167  복잡한 설정 (성능 더 악화)
+2026-02-16  0.4821  LoRA 강도 조정
+```
+
+모델이 작아서 그런지 파인튜닝은 이 모델을 더 악화 시켰다.
+
+### Phase 4: 세부 최적화 (0.61 → 0.6184)
+
+```
+2026-02-17  0.6177  0.613 코드 재제출 
+2026-02-18  0.5523  MLP 보호 + Layer 22-29 추가 보호 (용량↑ 속도↓)
+2026-02-18  0.6128  시드 42 → 1015
+2026-02-19  0.6071  시드 1
+2026-02-20  0.5980  시드 777
+2026-02-21  0.6052  complexity>=8 필터 적용
+2026-02-22  0.5015  attn_implementation="sdpa" (역효과)
+2026-02-22  0.6057  설정 복구
+```
+
+결국 여러번 시도 끝에 최적의 세팅을 찾아냈다. 서버 상태에 따라 점수가 조금씩 변동되었다.
 
 ---
 
 ## 대회 결과
 
-| | Score |
+| | Score |rank |
 |---|------:|
-| Public (Best) | **0.6184** |
-
----
-
-## 환경
-
-```
-transformers==4.57.3 (대회 서버 호환 버전)
-llmcompressor, datasets==4.4.1, accelerate==1.10.1
-Google Colab T4 GPU
-```
+| Public (Best) | **0.6184** |97/628 (상위 16%) |
 
 ---
 
