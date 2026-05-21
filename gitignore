@@ -1,0 +1,28 @@
+# Model weights (대회 제공 모델)
+base_model/
+model/
+*.bin
+*.safetensors
+*.gguf
+*.pt
+*.pth
+
+# Submission zips
+submit_*.zip
+baseline_submit.zip
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Google Colab
+offload_*/
+open.zip
+
+# OS
+.DS_Store
+Thumbs.db
